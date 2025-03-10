@@ -24,11 +24,12 @@ const Navbar = () => {
   }, []);
 
   const navItems = [
-    { link: "Home", path: "home" },
-    { link: "Service", path: "service" },
-    { link: "About", path: "about" },
-    { link: "Testimonial", path: "testimonial" },
-    { link: "Contact Us", path: "contact" },
+    { link: "Home", path: "home", type: "scroll" },
+    { link: "Service", path: "service", type: "scroll" },
+    { link: "About", path: "about", type: "scroll" },
+    { link: "Testimonial", path: "testimonial", type: "scroll" },
+    { link: "Projects", path: "/projects", type: "router" }, // Changed to router link
+    { link: "Contact Us", path: "contact", type: "scroll" },
   ];
 
   return (
@@ -51,22 +52,26 @@ const Navbar = () => {
           </Link>
           {/* Desktop Nav Items */}
           <ul className="space-x-12 lg:flex" hidden>
-            {navItems.map(({ link, path }) => (
+            {navItems.map(({ link, path, type }) => (
               <li
                 key={path}
                 className={`hover:text-naturalPrimary ${
                   activeSection === path ? "text-naturalPrimary font-bold" : ""
                 }`}
               >
-                <Link
-                  to={path}
-                  spy={true}
-                  smooth={true}
-                  offset={-100}
-                  onSetActive={() => setActiveSection(path)}
-                >
-                  {link}
-                </Link>
+                {type === "scroll" ? (
+                  <Link
+                    to={path}
+                    spy={true}
+                    smooth={true}
+                    offset={-100}
+                    onSetActive={() => setActiveSection(path)}
+                  >
+                    {link}
+                  </Link>
+                ) : (
+                  <RouterLink to={path}>{link}</RouterLink>
+                )}
               </li>
             ))}
 
@@ -87,29 +92,36 @@ const Navbar = () => {
           </button>
         </div>
       </nav>
+      
       {/* Mobile Nav Items */}
       <ul
         className={`lg:hidden transition-all duration-300 bg-brandPrimary absolute w-full left-0 ${
           isMenuOpen ? "block" : "hidden"
         }`}
       >
-        {navItems.map(({ link, path }) => (
+        {navItems.map(({ link, path, type }) => (
           <li
             key={path}
             className={`py-2 text-center hover:bg-gray-100 ${
               activeSection === path ? "bg-naturalPrimary text-white" : ""
             }`}
           >
-            <Link
-              to={path}
-              spy={true}
-              smooth={true}
-              offset={-100}
-              onSetActive={() => setActiveSection(path)}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {link}
-            </Link>
+            {type === "scroll" ? (
+              <Link
+                to={path}
+                spy={true}
+                smooth={true}
+                offset={-100}
+                onSetActive={() => setActiveSection(path)}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link}
+              </Link>
+            ) : (
+              <RouterLink to={path} onClick={() => setIsMenuOpen(false)}>
+                {link}
+              </RouterLink>
+            )}
           </li>
         ))}
       </ul>
