@@ -10,6 +10,8 @@ import Myfooter from './components/Myfooter';
 import Contactus from './components/Contactus';
 import ContactPage from './components/ContactPage';
 import LandingPage from './components/LandingPage';
+import Project from './components/Projects';
+
 
 
 
@@ -19,9 +21,11 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
+          
           <Route>
             <Route path="/" element={<LandingPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/projects" element={<Project />} />
           </Route>
         </Routes>
         <Myfooter />
