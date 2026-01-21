@@ -8,18 +8,18 @@ import Newsletter from './Newsletter';
 import Myfooter from './Myfooter';
 import Contactus from './Contactus';
 import Hcontact from './Hcontact';
+import Clients from './Clients';
 
 export default function LandingPage() {
-    return (
-        <div>
-            <Navebar />
-            <Home />
-            <Services />
-            <AboutUs />
-            <Product />
-            <Hcontact />
-            <Contactus />
-            <Newsletter />
-        </div>
-    )
+  return (
+    <div>
+      <Home />
+      <AboutUs />
+      <Clients />
+      <Services />
+      <Product />
+      <Hcontact />
+    </div>
+  );
 }
+
