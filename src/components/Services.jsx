@@ -117,7 +117,7 @@ function Services() {
             <FadeUp
               key={service.id}
               delay={200 + index * 100}
-              className="w-full sm:w-[280px] lg:w-[260px] xl:w-[270px]"
+              className={`w-full sm:w-[280px] lg:w-[260px] xl:w-[270px] float-card float-delay-${index}`}
             >
               <div
                 onMouseMove={(e) => {
@@ -170,6 +170,45 @@ function Services() {
           ))}
         </div>
       </div>
+
+      {/* Card Float CSS  */}
+      <style >{`
+        .float-card {
+          animation: cardFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes cardFloat {
+          0%,
+          100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+
+        .float-delay-0 {
+          animation-delay: 0s;
+        }
+        .float-delay-1 {
+          animation-delay: 0.3s;
+        }
+        .float-delay-2 {
+          animation-delay: 0.6s;
+        }
+        .float-delay-3 {
+          animation-delay: 0.9s;
+        }
+        .float-delay-4 {
+          animation-delay: 1.2s;
+        }
+        .float-delay-5 {
+          animation-delay: 1.5s;
+        }
+        .float-delay-6 {
+          animation-delay: 1.8s;
+        }
+      `}</style>
     </section>
   );
 }
