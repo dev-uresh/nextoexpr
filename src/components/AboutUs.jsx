@@ -101,11 +101,14 @@ export default function AboutUs() {
             className="relative w-full max-w-[520px] mx-auto lg:mx-0"
           >
             {/* small image left */}
-            <div
-              className="absolute left-0 sm:-left-2 lg:-left-2top-36 sm:top-48 lg:top-48
-                  w-[150px] sm:w-[170px] md:w-[190px] lg:w-[190px]
-                  h-[200px] sm:h-[240px] md:h-[280px] lg:h-[280px]
-                  overflow-hidden border border-white/10 shadow-lg"
+           <div className="absolute left-0 
+                top-44 
+                sm:-left-2 sm:top-56 
+                md:top-48 
+                lg:-left-2 lg:top-48
+                w-[150px] sm:w-[170px] md:w-[190px] lg:w-[190px]
+                h-[200px] sm:h-[240px] md:h-[280px] lg:h-[280px]
+                overflow-hidden border border-white/10 shadow-lg"
             >
               <img
                 src={aboutimg2}

@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import logo1 from "../assets/logo1.png";
 import logo2 from "../assets/company2.png";
 import logo3 from "../assets/logo.jpg";
+import Ella from "../assets/clients/Ella.png"
 
-/* FadeUp (scroll reveal animation) */
+/* FadeUp  */
 function FadeUp({ children, delay = 0, className = "" }) {
     const [isVisible, setIsVisible] = useState(false);
     const ref = useRef(null);
@@ -40,7 +41,7 @@ function FadeUp({ children, delay = 0, className = "" }) {
 function Clients() {
     const row1 = [
         { id: 1, img: logo1, name: "Client 1" },
-        { id: 2, img: logo2, name: "Client 2" },
+        { id: 2, img: Ella, name: "Client 2" },
         { id: 3, img: logo3, name: "Client 3" },
         { id: 4, img: logo1, name: "Client 4" },
         { id: 5, img: logo2, name: "Client 5" },

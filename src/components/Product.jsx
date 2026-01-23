@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 
-// ✅ Import images for logos
 import img1 from "../assets/techstack/1.png";
 import img2 from "../assets/techstack/2.png";
 import img3 from "../assets/techstack/3.png";
@@ -35,11 +34,43 @@ const logos = [
   img15,
 ];
 
+/* FadeUp  */
+function FadeUp({ children, delay = 0, className = "" }) {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setVisible(true);
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -80px 0px" }
+    );
+
+    observer.observe(el);
+    return () => observer.unobserve(el);
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${className} ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
+
 const Product = () => {
   const canvasRef = useRef(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  // ✅ Particle Network Background Animation
+  // Particle Network Background Animation
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -127,7 +158,12 @@ const Product = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // background gradient
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      const gradient = ctx.createLinearGradient(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
       gradient.addColorStop(0, "rgba(5, 11, 35, 0.98)");
       gradient.addColorStop(1, "rgba(10, 14, 58, 0.96)");
       ctx.fillStyle = gradient;
@@ -182,7 +218,7 @@ const Product = () => {
     };
   }, [mousePos]);
 
-  // ✅ Fixed positions (like screenshot)
+  //  Fixed positions
   const positions = [
     { top: "10%", left: "6%" },
     { top: "12%", left: "18%" },
@@ -205,7 +241,7 @@ const Product = () => {
 
   return (
     <section className="w-full bg-[#050b23] flex flex-col items-center px-4 py-16 sm:px-6 relative overflow-hidden">
-      {/* ✅ Particle Network Background */}
+      {/* Particle Network Background */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"
@@ -216,40 +252,47 @@ const Product = () => {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#00FFD5]/5 blur-[150px] rounded-full animate-drift-reverse pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto text-center">
-        <h2 className="text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
-          Techstack we work with
-        </h2>
+        {/*  Heading FadeUp */}
+        <FadeUp delay={80}>
+          <h2 className="text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
+            Techstack we work with
+          </h2>
+        </FadeUp>
 
-        <p className="mt-3 mb-10 text-sm text-gray-300 lg:text-base max-w-2xl mx-auto">
-          Harnessing the power of the latest technologies, we deliver exceptional
-          results
-        </p>
+        <FadeUp delay={160}>
+          <p className="mt-3 mb-10 text-sm text-gray-300 lg:text-base max-w-2xl mx-auto">
+            Harnessing the power of the latest technologies, we deliver
+            exceptional results
+          </p>
+        </FadeUp>
 
-        {/* ✅ Floating Logo Area */}
-        <div className="relative w-full max-w-6xl mx-auto h-[420px] sm:h-[480px] lg:h-[520px]">
-          {logos.map((img, idx) => {
-            const pos = positions[idx % positions.length];
+        {/* Floating Logo Area FadeUp */}
+        <FadeUp delay={240}>
+          <div className="relative w-full max-w-6xl mx-auto h-[420px] sm:h-[480px] lg:h-[520px]">
+            {logos.map((img, idx) => {
+              const pos = positions[idx % positions.length];
 
-            return (
-              <img
-                key={idx}
-                src={img}
-                alt={`Tech logo ${idx}`}
-                className={`absolute object-contain w-12 sm:w-14 md:w-16 lg:w-20
-                  opacity-90 hover:opacity-100 transition-all duration-300
-                  drop-shadow-[0_0_25px_rgba(0,184,255,0.25)]
-                  animate-float-${(idx % 3) + 1}`}
-                style={{
-                  top: pos.top,
-                  left: pos.left,
-                }}
-              />
-            );
-          })}
-        </div>
+              return (
+                <img
+                  key={idx}
+                  src={img}
+                  alt={`Tech logo ${idx}`}
+                  className={`absolute object-contain w-12 sm:w-14 md:w-16 lg:w-20
+                    opacity-90 hover:opacity-100 transition-all duration-300
+                    drop-shadow-[0_0_25px_rgba(0,184,255,0.25)]
+                    animate-float-${(idx % 3) + 1}`}
+                  style={{
+                    top: pos.top,
+                    left: pos.left,
+                  }}
+                />
+              );
+            })}
+          </div>
+        </FadeUp>
       </div>
 
-      {/* ✅ Custom CSS Animations */}
+      {/*Custom CSS Animations */}
       <style>{`
         @keyframes drift-slow {
           0% { transform: translate(0, 0) scale(1); }
