@@ -37,16 +37,16 @@ export default function MyFooter() {
             <h3 className="mb-6 text-lg font-semibold text-white">Quick Links</h3>
             <ul className="space-y-4 text-gray-400">
               <li>
-                <a href="#about" className="hover:text-white transition">About</a>
+                <a href="/#about" className="hover:text-white transition">About</a>
               </li>
               <li>
-                <a href="#services" className="hover:text-white transition">Services</a>
+                <a href="/#service" className="hover:text-white transition">Services</a>
               </li>
               <li>
-                <a href="#work" className="hover:text-white transition">Work</a>
+                <a href="/portfolio" className="hover:text-white transition">Work</a>
               </li>
               <li>
-                <a href="#contact" className="hover:text-white transition">Contact</a>
+                <a href="/#contact" className="hover:text-white transition">Contact</a>
               </li>
             </ul>
           </div>

@@ -17,21 +17,24 @@ function FadeUp({ children, delay = 0, className = "" }) {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
+        if (entry.isIntersecting) {
+          setVisible(true);
+        } else {
+          setVisible(false);
+        }
       },
       { threshold: 0.15, rootMargin: "0px 0px -80px 0px" }
     );
 
     observer.observe(el);
-    return () => observer.unobserve(el);
+    return () => observer.disconnect();
   }, []);
 
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ease-out ${className} ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
+      className={`transition-all duration-700 ease-out ${className} ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
@@ -114,7 +117,7 @@ function Hcontact() {
           className="mx-auto text-center max-w-2xl md:max-w-4xl mb-16"
         >
           <p className="text-sm font-semibold tracking-[0.25em] uppercase text-[#00B8FF]">
-             Connect Us
+            Connect Us
           </p>
 
           <h2 className="mb-3 text-3xl sm:text-4xl md:text-5xl font-semibold text-white md:whitespace-nowrap">
@@ -155,13 +158,19 @@ function Hcontact() {
                 {contactItems.map((item, index) => (
                   <FadeUp key={index} delay={200 + index * 120}>
                     <div
-                      className="group relative overflow-hidden rounded-xl border border-white/[0.05]
-                      bg-gradient-to-br from-white/[0.02] to-transparent
+                      className="group relative overflow-hidden rounded-xl border border-white/[0.06]
+                      bg-gradient-to-br from-white/[0.025] to-transparent
                       p-4 sm:p-6 transition-all duration-500
-                      hover:border-white/[0.15] hover:shadow-2xl hover:shadow-blue-500/5"
+                      hover:border-white/[0.16] hover:shadow-2xl"
                     >
-                      {/* Hover effect background */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      {/* Color glow background */}
+                      <div
+                        className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500
+                        bg-gradient-to-r ${item.gradient} blur-2xl`}
+                      />
+
+                      {/* Soft overlay so glow stays premium */}
+                      <div className="absolute inset-0 bg-[#050b23]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                       <div className="relative flex items-center gap-3 sm:gap-5">
                         <div
@@ -180,8 +189,9 @@ function Hcontact() {
                             <a
                               href={item.link}
                               className="text-white text-base sm:text-lg font-semibold
-                              hover:text-blue-300 transition-colors duration-300
-                              block mb-1 group-hover:translate-x-1 transition-transform"
+                              hover:text-blue-300 transition-all duration-300
+                              block mb-1 group-hover:translate-x-1"
+
                             >
                               {item.content}
                             </a>
@@ -274,9 +284,8 @@ function Hcontact() {
                   ) : null}
 
                   <div
-                    className={`h-full w-full transition-opacity duration-500 ${
-                      formReady ? "opacity-100" : "opacity-0"
-                    }`}
+                    className={`h-full w-full transition-opacity duration-500 ${formReady ? "opacity-100" : "opacity-0"
+                      }`}
                     data-tf-live="01HM8G88Y72Y70Q2SW4940DP5G"
                     data-tf-opacity="100"
                     data-tf-button-text="Start Conversation"

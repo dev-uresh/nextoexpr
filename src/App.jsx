@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import MainLayout from "./components/MainLayout";
 import LandingPage from "./components/LandingPage";
-import ContactPage from "./components/ContactPage";
 import PortfolioPage from "./components/PortfolioPage";
 
 function App() {
@@ -12,7 +11,6 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/contact" element={<ContactPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
         </Route>
       </Routes>

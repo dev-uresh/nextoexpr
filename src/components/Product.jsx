@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
+import FadeUp from "../components/FadeUp";
 
 import img1 from "../assets/techstack/1.png";
 import img2 from "../assets/techstack/2.png";
@@ -34,57 +35,54 @@ const logos = [
   img15,
 ];
 
-/* FadeUp  */
-function FadeUp({ children, delay = 0, className = "" }) {
-  const [visible, setVisible] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -80px 0px" }
-    );
-
-    observer.observe(el);
-    return () => observer.unobserve(el);
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      className={`transition-all duration-700 ease-out ${className} ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        }`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
-}
-
 const Product = () => {
+  const sectionRef = useRef(null);
   const canvasRef = useRef(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  // Particle Network Background Animation
+  const mouseRef = useRef({ x: 9999, y: 9999 });
+
+  const runningRef = useRef(false);
+
+  const positions = [
+    { top: "10%", left: "6%" },
+    { top: "12%", left: "18%" },
+    { top: "6%", left: "35%" },
+    { top: "8%", left: "52%" },
+    { top: "6%", left: "70%" },
+    { top: "14%", left: "86%" },
+
+    { top: "38%", left: "10%" },
+    { top: "32%", left: "28%" },
+    { top: "34%", left: "48%" },
+    { top: "36%", left: "70%" },
+    { top: "40%", left: "88%" },
+
+    { top: "72%", left: "8%" },
+    { top: "68%", left: "30%" },
+    { top: "72%", left: "62%" },
+    { top: "74%", left: "86%" },
+  ];
+
+  // Particle Network Background Animation 
   useEffect(() => {
+    const sectionEl = sectionRef.current;
     const canvas = canvasRef.current;
-    if (!canvas) return;
+
+    if (!sectionEl || !canvas) return;
 
     const ctx = canvas.getContext("2d");
     let animationFrameId;
     let particles = [];
+
     const particleCount = 60;
     const connectionDistance = 150;
     const mouseInfluenceRadius = 200;
 
     const resize = () => {
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = canvas.parentElement.clientHeight;
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      canvas.width = parent.clientWidth;
+      canvas.height = parent.clientHeight;
     };
 
     class Particle {
@@ -94,14 +92,12 @@ const Product = () => {
         this.vx = (Math.random() - 0.5) * 0.5;
         this.vy = (Math.random() - 0.5) * 0.5;
         this.radius = Math.random() * 2 + 1;
-        this.baseColor = "rgba(0, 184, 255,";
       }
 
       update(mouse) {
         this.x += this.vx;
         this.y += this.vy;
 
-        // mouse repulsion (subtle)
         const dx = this.x - mouse.x;
         const dy = this.y - mouse.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -112,7 +108,6 @@ const Product = () => {
           this.y += (dy / dist) * force * 0.5;
         }
 
-        // wrap edges
         if (this.x < 0) this.x = canvas.width;
         if (this.x > canvas.width) this.x = 0;
         if (this.y < 0) this.y = canvas.height;
@@ -122,16 +117,14 @@ const Product = () => {
       draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `${this.baseColor} 0.3)`;
+        ctx.fillStyle = "rgba(0, 184, 255, 0.28)";
         ctx.fill();
       }
     }
 
     const init = () => {
       particles = [];
-      for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
-      }
+      for (let i = 0; i < particleCount; i++) particles.push(new Particle());
     };
 
     const drawLines = () => {
@@ -154,16 +147,13 @@ const Product = () => {
       }
     };
 
-    const animate = () => {
+    const renderFrame = () => {
+      if (!runningRef.current) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // background gradient
-      const gradient = ctx.createLinearGradient(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
       gradient.addColorStop(0, "rgba(5, 11, 35, 0.98)");
       gradient.addColorStop(1, "rgba(10, 14, 58, 0.96)");
       ctx.fillStyle = gradient;
@@ -188,59 +178,64 @@ const Product = () => {
       }
 
       particles.forEach((p) => {
-        p.update(mousePos);
+        p.update(mouseRef.current);
         p.draw();
       });
       drawLines();
 
-      animationFrameId = requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(renderFrame);
     };
+
+    const start = () => {
+      if (runningRef.current) return;
+      runningRef.current = true;
+      resize();
+      init();
+      renderFrame();
+    };
+
+    const stop = () => {
+      runningRef.current = false;
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
+
+    // run only when visible
+    const sectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) start();
+        else stop();
+      },
+      { threshold: 0.12 }
+    );
+
+    sectionObserver.observe(sectionEl);
 
     const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect();
-      setMousePos({
+      mouseRef.current = {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
-      });
+      };
     };
 
-    window.addEventListener("resize", resize);
+    const handleResize = () => resize();
+
+    window.addEventListener("resize", handleResize);
     canvas.addEventListener("mousemove", handleMouseMove);
 
-    resize();
-    init();
-    animate();
-
     return () => {
-      window.removeEventListener("resize", resize);
+      stop();
+      sectionObserver.disconnect();
+      window.removeEventListener("resize", handleResize);
       canvas.removeEventListener("mousemove", handleMouseMove);
-      cancelAnimationFrame(animationFrameId);
     };
-  }, [mousePos]);
-
-  //  Fixed positions
-  const positions = [
-    { top: "10%", left: "6%" },
-    { top: "12%", left: "18%" },
-    { top: "6%", left: "35%" },
-    { top: "8%", left: "52%" },
-    { top: "6%", left: "70%" },
-    { top: "14%", left: "86%" },
-
-    { top: "38%", left: "10%" },
-    { top: "32%", left: "28%" },
-    { top: "34%", left: "48%" },
-    { top: "36%", left: "70%" },
-    { top: "40%", left: "88%" },
-
-    { top: "72%", left: "8%" },
-    { top: "68%", left: "30%" },
-    { top: "72%", left: "62%" },
-    { top: "74%", left: "86%" },
-  ];
+  }, []);
 
   return (
-    <section className="w-full bg-[#050b23] flex flex-col items-center px-4 py-16 sm:px-6 relative overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="w-full bg-[#050b23] flex flex-col items-center px-4 py-16 sm:px-6 relative overflow-hidden"
+    >
       {/* Particle Network Background */}
       <canvas
         ref={canvasRef}
@@ -252,22 +247,24 @@ const Product = () => {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#00FFD5]/5 blur-[150px] rounded-full animate-drift-reverse pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto text-center">
-        {/*  Heading FadeUp */}
-        <FadeUp delay={80}>
-          <h2 className="text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
-            Techstack we work with
-          </h2>
-        </FadeUp>
+        {/* Heading */}
+        <FadeUp delay={80} className="mx-auto text-center max-w-2xl md:max-w-4xl mb-14">
+          <p className="text-sm font-semibold tracking-[0.25em] uppercase text-[#00B8FF]">
+            TECH STACK
+          </p>
 
-        <FadeUp delay={160}>
-          <p className="mt-3 mb-10 text-sm text-gray-300 lg:text-base max-w-2xl mx-auto">
-            Harnessing the power of the latest technologies, we deliver
-            exceptional results
+          <h2 className="mb-3 text-3xl sm:text-4xl md:text-5xl font-semibold text-white md:whitespace-nowrap">
+            Technologies That Power Your Growth
+          </h2>
+
+          <p className="text-gray-300">
+            Harnessing the power of the latest technologies, we build scalable,
+            high-performance solutions that deliver exceptional results.
           </p>
         </FadeUp>
 
-        {/* Floating Logo Area FadeUp */}
-        <FadeUp delay={240}>
+        {/* Floating Logo Area */}
+        <FadeUp delay={220}>
           <div className="relative w-full max-w-6xl mx-auto h-[420px] sm:h-[480px] lg:h-[520px]">
             {logos.map((img, idx) => {
               const pos = positions[idx % positions.length];
@@ -277,10 +274,11 @@ const Product = () => {
                   key={idx}
                   src={img}
                   alt={`Tech logo ${idx}`}
+                  loading="lazy"
                   className={`absolute object-contain w-12 sm:w-14 md:w-16 lg:w-20
-                    opacity-90 hover:opacity-100 transition-all duration-300
-                    drop-shadow-[0_0_25px_rgba(0,184,255,0.25)]
-                    animate-float-${(idx % 3) + 1}`}
+                  opacity-90 hover:opacity-100 transition-all duration-300
+                  drop-shadow-[0_0_25px_rgba(0,184,255,0.25)]
+                  animate-float-${(idx % 3) + 1}`}
                   style={{
                     top: pos.top,
                     left: pos.left,
@@ -292,7 +290,7 @@ const Product = () => {
         </FadeUp>
       </div>
 
-      {/*Custom CSS Animations */}
+      {/* Custom CSS Animations */}
       <style>{`
         @keyframes drift-slow {
           0% { transform: translate(0, 0) scale(1); }
