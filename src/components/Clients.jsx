@@ -4,6 +4,7 @@ import FadeUp from "../components/FadeUp";
 import logo1 from "../assets/clients/logo1.png";
 import logo2 from "../assets/clients/logo2.png";
 import logo3 from "../assets/clients/logo3.png";
+import logo4 from "../assets/clients/logo4.png";
 import Ella from "../assets/clients/Ella.png";
 
 function Clients() {
@@ -11,9 +12,9 @@ function Clients() {
     () => [
       { id: 1, img: logo1, name: "Client 1" },
       { id: 2, img: Ella, name: "Client 2" },
-      { id: 3, img: logo3, name: "Client 3" },
-      { id: 4, img: logo1, name: "Client 4" },
-      { id: 5, img: logo2, name: "Client 5" },
+      { id: 3, img: logo2, name: "Client 3" },
+      { id: 4, img: logo3, name: "Client 4" },
+      { id: 5, img: logo4, name: "Client 5" },
       { id: 6, img: logo3, name: "Client 6" },
     ],
     []

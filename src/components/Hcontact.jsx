@@ -19,8 +19,7 @@ function FadeUp({ children, delay = 0, className = "" }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
-        } else {
-          setVisible(false);
+          observer.unobserve(el);
         }
       },
       { threshold: 0.15, rootMargin: "0px 0px -80px 0px" }
@@ -33,7 +32,9 @@ function FadeUp({ children, delay = 0, className = "" }) {
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ease-out ${className} ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      className={`transition-all duration-700 ease-out ${className} ${visible
+        ? "opacity-100 translate-y-0"
+        : "opacity-0 translate-y-10"
         }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
