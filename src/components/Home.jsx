@@ -1,64 +1,193 @@
-import React from "react";
-import { Carousel } from "flowbite-react";
+import React, { useRef, useEffect, useState } from "react";
 
 function Home() {
+  const videoRef = useRef(null);
+  const overlayRef = useRef(null);
+
+  const [videoReady, setVideoReady] = useState(false);
+
+  const [visible, setVisible] = useState({
+    l1: false,
+    l2: false,
+    l3: false,
+    subtitle: false,
+    btn1: false,
+    btn2: false,
+  });
+
+  // VIDEO LOGIC
+  useEffect(() => {
+    const video = videoRef.current;
+    const overlay = overlayRef.current;
+
+    if (!video) return;
+
+    video.playbackRate = 0.8;
+
+    const handleTimeUpdate = () => {
+      if (video.duration - video.currentTime < 0.7) {
+        overlay.style.opacity = "1";
+      }
+    };
+
+    const handleEnded = () => {
+      overlay.style.opacity = "1";
+
+      setTimeout(() => {
+        video.currentTime = 0;
+        video.play();
+
+        setTimeout(() => {
+          overlay.style.opacity = "0";
+        }, 200);
+      }, 600);
+    };
+
+    video.addEventListener("timeupdate", handleTimeUpdate);
+    video.addEventListener("ended", handleEnded);
+
+    return () => {
+      video.removeEventListener("timeupdate", handleTimeUpdate);
+      video.removeEventListener("ended", handleEnded);
+    };
+  }, []);
+
+  // TEXT ANIMATION TIMING
+  useEffect(() => {
+    const timings = [
+      ["l1", 0],
+      ["l2", 180],
+      ["l3", 360],
+      ["subtitle", 600],
+      ["btn1", 850],
+      ["btn2", 1000],
+    ];
+
+    const timers = timings.map(([key, delay]) =>
+      setTimeout(() => {
+        setVisible((v) => ({ ...v, [key]: true }));
+      }, delay)
+    );
+
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  const anim = (show) =>
+    `transition-all duration-1000 ease-out transform
+    ${
+      show
+        ? "opacity-100 translate-y-0 blur-0"
+        : "opacity-0 translate-y-10 blur-sm"
+    }`;
+
+  // button special animation
+  const btnAnim = (show) =>
+    `transition-all duration-700 ease-out transform
+    ${
+      show
+        ? "opacity-100 translate-y-0 scale-100"
+        : "opacity-0 translate-y-8 scale-95"
+    }`;
+
   return (
-    <div className="relative px-6 isolate pt-14 lg:px-8">
-      <div
-        className="absolute inset-x-0 overflow-hidden -top-40 -z-10 transform-gpu blur-3xl sm:-top-80"
-        aria-hidden="true" 
+    <div className="relative h-screen overflow-hidden isolate">
+
+      {/* POSTER IMAGE */}
+      <img
+        src="/hero-poster.png"
+        alt="hero poster"
+        className={`absolute inset-0 w-full h-full object-cover -z-40
+          transition-opacity duration-1200
+          ${videoReady ? "opacity-0" : "opacity-100"}`}
+      />
+
+      {/* VIDEO */}
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        preload="metadata"
+        onCanPlay={() => {
+          setTimeout(() => setVideoReady(true), 150);
+        }}
+        className={`absolute inset-0 w-full h-full object-cover -z-30
+          transition-all duration-1200 ease-out
+          ${
+            videoReady
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-105"
+          }`}
       >
-        <div
-          className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-          style={{
-            clipPath:
-              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-          }}
-        ></div>
-      </div>
-      <div className="max-w-2xl py-32 mx-auto sm:py-30 lg:py-30" id="home" >
-        <div className="hidden sm:mb-8 sm:flex sm:justify-center" >
-          <div className="relative px-3 py-1 text-gray-600 rounded-full text-sm/6 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-            Announcing our next round of funding.{" "}
-            <a href="#" className="font-semibold text-indigo-600">
-              <span className="absolute inset-0" aria-hidden="true"></span>
-              Read more <span aria-hidden="true">&rarr;</span>
-            </a>
-          </div>
-        </div>
-        <div className="text-center">
-          <h1 className="text-5xl font-semibold tracking-tight text-gray-900 text-balance sm:text-7xl">
-            Empowering Digital Growth
-          </h1>
-          <p className="mt-8 text-lg font-medium text-gray-500 text-pretty sm:text-xl/8">
-            Transform your ideas into reality with innovative software
-            development, cloud services, and IT consulting. Let's build the
-            future together.
-          </p>
-          <div className="flex items-center justify-center mt-10 gap-x-6">
-            <a
-              href="#"
-              className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        <source src="/videos/hero.mp4" type="video/mp4" />
+      </video>
+
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-[#050b23]/85 -z-20" />
+
+      {/* Smooth loop fade */}
+      <div
+        ref={overlayRef}
+        className="absolute inset-0 transition-opacity duration-700 bg-[#050b23] opacity-0 -z-10"
+      />
+
+      {/* CONTENT */}
+      <div className="relative h-full max-w-7xl px-6 mx-auto flex items-center">
+        <div className="max-w-3xl text-left text-white space-y-6">
+
+          {/* TITLE */}
+          <h1 className="font-extrabold tracking-tight leading-[1.1]">
+            <span className={`block text-[48px] sm:text-[64px] lg:text-[90px] ${anim(visible.l1)}`}>
+              Empowering
+            </span>
+
+            <span className={`block text-[48px] sm:text-[64px] lg:text-[90px] ${anim(visible.l2)}`}>
+              AI-Driven
+            </span>
+
+            <span
+              className={`block pb-2 text-[42px] sm:text-[56px] lg:text-[78px]
+              bg-gradient-to-r from-[#00E5FF] via-[#00B4FF] to-[#007BFF]
+              bg-clip-text text-transparent ${anim(visible.l3)}`}
             >
-              Get started
-            </a>
-            <a href="#" className="font-semibold text-gray-900 text-sm/6">
-              Learn more <span aria-hidden="true">→</span>
-            </a>
+              Digital Growth
+            </span>
+          </h1>
+
+          {/* SUBTITLE */}
+          <p
+            className={`text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl ${anim(
+              visible.subtitle
+            )}`}
+          >
+            Transform your ideas into reality with
+            <span className="text-cyan-300 font-medium"> AI-powered </span>
+            software development, intelligent cloud services, and smart IT
+            consulting.
+          </p>
+
+          {/* BUTTONS */}
+          <div className="flex gap-x-6 pt-4">
+            <button
+              className={`rounded-full px-8 py-3 font-semibold
+                bg-gradient-to-r from-[#00C2FF] to-[#00F5D4]
+                shadow-lg shadow-cyan-500/30 hover:scale-105
+                transition-all duration-300 ${btnAnim(visible.btn1)}`}
+            >
+              Get Started
+            </button>
+
+            <button
+              className={`rounded-full px-8 py-3 font-semibold
+                text-cyan-300 border border-cyan-400/40 backdrop-blur-sm
+                hover:bg-cyan-400/10 hover:text-white
+                transition-all duration-300 ${btnAnim(visible.btn2)}`}
+            >
+              Learn More →
+            </button>
           </div>
+
         </div>
-      </div>
-      <div
-        className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
-        aria-hidden="true"
-      >
-        <div
-          className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
-          style={{
-            clipPath:
-              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-          }}
-        ></div>
       </div>
     </div>
   );
